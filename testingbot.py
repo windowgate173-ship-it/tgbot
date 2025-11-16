@@ -1,4 +1,6 @@
-import telebot, random
+from random import randint
+
+import telebot, random, time
 from telebot import TeleBot
 
 # @tokencharm
@@ -18,13 +20,17 @@ cointhrow = (
     'решка'
 )
 
+@bot.message_handler(commands=['dice'])
+def dice(message):
+    bot.send_message(message.chat.id, str(randint(1,6)))
+
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.send_message(message.chat.id, "Привет! Я твой бот-помощник!")
 
 @bot.message_handler(commands=['helping'])
 def helping(message):
-    bot.send_message(message.chat.id,"Сейчас помогу! Список команд: /start\n /helping\n /quote\n /throw_a_coin" )
+    bot.send_message(message.chat.id,"Список команд: /start\n /helping\n /quote\n /throw_a_coin" )
 
 @bot.message_handler(commands=['quote'])
 def quote(message):
@@ -40,6 +46,22 @@ def handle_text(message):
     if text == "привет":
         bot.send_message(message.chat.id, "Здравствуй, пользователь!")
 
+@bot.message_handler(content_types=['voice'])
+def handle_voice(message):
+    bot.reply_to(message, "Я не умею распознавать голос...пока что. Напиши текстом!")
+
+@bot.message_handler(commands=['timer'])
+def set_timer(message):
+    try:
+        seconds = int(message.text.split(' ')[1])
+        if seconds > 15:
+            bot.send_message(message.chat.id, "Слишком долго, 5 мин маскимум!")
+            return
+        bot.send_message(message.chat.id, f"Таймер на {seconds} сек установлен!")
+        time.sleep(seconds)
+        bot.send_message(message.chat.id, f"Время вышло")
+    except:
+        bot.send_message(message.chat.id, f"Используй команду /timer, чтобы установить время")
 
 
 bot.polling()
