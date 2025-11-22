@@ -20,25 +20,21 @@ cointhrow = (
     'решка'
 )
 
-@bot.message_handler(commands=['dice'])
-def dice(message):
-    bot.send_message(message.chat.id, str(randint(1,6)))
-
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.send_message(message.chat.id, "Привет! Я твой бот-помощник!")
 
-@bot.message_handler(commands=['helping'])
-def helping(message):
-    bot.send_message(message.chat.id,"Список команд: /start\n /helping\n /quote\n /throw_a_coin" )
+@bot.message_handler(commands=['throw_a_coin'])
+def throw_a_coin(message):
+    bot.send_message(message.chat.id, random.choice(cointhrow))
 
 @bot.message_handler(commands=['quote'])
 def quote(message):
     bot.send_message(message.chat.id, random.choice(citatstalin))
 
-@bot.message_handler(commands=['throw_a_coin'])
-def throw_a_coin(message):
-    bot.send_message(message.chat.id, random.choice(cointhrow))
+@bot.message_handler(commands=['dice'])
+def dice(message):
+    bot.send_message(message.chat.id, str(randint(1,6)))
 
 @bot.message_handler(content_types=['text'])
 def handle_text(message):
@@ -49,6 +45,13 @@ def handle_text(message):
 @bot.message_handler(content_types=['voice'])
 def handle_voice(message):
     bot.reply_to(message, "Я не умею распознавать голос...пока что. Напиши текстом!")
+
+@bot.message_handler(commands=['password'])
+def generate_password(message):
+    length = 12
+    chars = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890'
+    password = " ",join(random.sample(chars, length))
+    bot.send_message(message.chat.id, f'Сгенерированный пароль: \n {password}')
 
 @bot.message_handler(commands=['timer'])
 def set_timer(message):
@@ -62,6 +65,11 @@ def set_timer(message):
         bot.send_message(message.chat.id, f"Время вышло")
     except:
         bot.send_message(message.chat.id, f"Используй команду /timer, чтобы установить время")
+
+@bot.message_handler(commands=['helping'])
+def helping(message):
+    bot.reply_to(message.chat.id,"Список команд: /start, /throw_a_coin, /quote, /dice, /password")
+
 
 
 bot.polling()
