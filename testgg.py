@@ -1,4 +1,4 @@
-import sqlite3, time
+import sqlite3, time, random
 from random import randint
 
 import telebot
@@ -36,7 +36,38 @@ def drowssap(message):
     cur.close()
     conn.close()
 
-    bot.send_message(message.chat.id, "Отлично!")
+    markup = telebot.types.InlineKeyboardMarkup()
+    markup.add(telebot.types.InlineKeyboardButton( 'Список пользователей', callback_data = 'users'))
+
+    bot.send_message(message.chat.id, 'Пользователь зарегистрирован', reply_markup = markup)
+
+@bot.callback_query_handler(func=lambda call: True)
+def callback(call):
+    conn = sqlite3.connect('quasi.sql')
+    cur = conn.cursor()
+
+    cur.execute('SELECT * FROM users')
+    users = cur.fetchall()
+
+    info = ''
+    for el in users:
+        info += f'Имя: {el[1]}, пароль: {el[2]}\n'
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
+@bot.message_handler(commands=['alternate'])
+def alternate(message):
+    conn = sqlite3.connect('quasi.sql')
+    cur = conn.cursor()
+    cur.execute('ADD COLUMN IF NOT EXISTS role (id int default 0')
+
+    conn.commit()
+    cur.close()
+    conn.close()
+    bot.send_message(message.chat.id, "Добавлен новый столбец")
 
 
 
